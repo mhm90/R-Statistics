@@ -1,14 +1,20 @@
-data = read.csv('./Datasets/GPU Kernel/sgemm_product.csv')
+#install.packages("readxl")
+library(readxl)
 
-#names(data)
+rm(list = ls())
+
+#data = read.csv('./Datasets/GPU Kernel/sgemm_product.csv')
+data = read_excel('./Datasets/Absenteeism at work/Absenteeism_at_work.xls')
 summary(data)
 
-plot(Run1..ms. ~ MWG, data = data)
+pairs(data)
 
-regFit = lm(Run1..ms. ~ MWG, data = data)
-summary(regFit)
-confint(regFit)
+#names(data)
+data$`Reason for absence`
 
-abline(regFit, col = "blue")
-
-predict(regFit, data.frame(MWG = c(2,4,32)), interval = "confidence")
+# Fixing categorical data
+data$ID.f = factor(data$ID)
+data$Reason.f. = factor(data$`Reason for absence`, labels=c("I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX", "XXI", "patient.follow-up", "medical.consultation", "blood.donation", "laboratory.exam", "unjustified.absence", "physiotherapy", "dental.consultation"))
+data$Month.f = factor(data$`Month of absence`)
+data$WeekDay.f = factor(data$`Day of the week`)
+data$Season.f = factor(data$Seasons)

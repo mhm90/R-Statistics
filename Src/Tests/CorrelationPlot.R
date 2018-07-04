@@ -1,3 +1,4 @@
+#install.packages("caTools")
 data = read.csv('./Datasets/GPU Kernel/sgemm_product.csv')
 
 names(data)
