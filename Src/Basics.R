@@ -7,10 +7,17 @@ rm(list = ls())
 data = read_excel('./Datasets/Absenteeism at work/Absenteeism_at_work.xls')
 summary(data)
 
+# Correlation Matrix
 pairs(data)
 
-#names(data)
+# Infos
+names(data)
 data$`Reason for absence`
+# Num. of Persons
+length(unique(data$ID))
+
+# Regression Target Histogram
+hist(data$`Absenteeism time in hours`)
 
 # Fixing categorical data
 data$ID.f = factor(data$ID)
