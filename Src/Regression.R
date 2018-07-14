@@ -7,6 +7,7 @@ singleReg = function(x, y, data, ...) {
   fit = lm(y ~ x, data = data)
   summary(fit)
   plot(x, y, ...)
+  #points(data$`Absenteeism time in hours`,fitted(fit),col="red",pch=20,cex=0.9)
   abline(fit, col = "green")
 }
 
@@ -238,24 +239,22 @@ ridgeReg = glmnet(X, data$`Absenteeism time in hours`, alpha = 0)
 plot(ridgeReg, main = "Ridge Regression against lambda Value")
 ridgeReg = cv.glmnet(X, data$`Absenteeism time in hours`, alpha = 0)
 plot(ridgeReg, main = "Cross Validated MSE over Ridge lambda Value")
+coef.cv.glmnet(ridgeReg, s = "lambda.min")
 
 # Lasso
 lassoReg = glmnet(X, data$`Absenteeism time in hours`, alpha = 1)
 plot(lassoReg, main = "Lasso Regression against lambda Value")
 lassoReg = cv.glmnet(X, data$`Absenteeism time in hours`, alpha = 1)
 plot(lassoReg, main = "Cross Validated MSE over Lasso lambda Value")
+coef.cv.glmnet(lassoReg, s = "lambda.min")
 
 summary(lassoReg)
 
-k = 10
-folds = cvFolds(NROW(data), K=k)
-createFolds
-apply
-
-?points
-l
-?colMeans
-sapply
-
-
-
+### Test
+#k = 10
+#folds = cvFolds(NROW(data), K=k)
+#createFolds
+#apply
+#?points
+#?colMeans
+#sapply
