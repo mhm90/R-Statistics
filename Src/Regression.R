@@ -83,6 +83,10 @@ summary(fit2)
 fit3 = update(fit2, . ~ . - Month.f , data = data)
 summary(fit3)
 
+plot(data$`Absenteeism time in hours` ~ ., data = data)
+points(data$`Absenteeism time in hours`,fitted(fit3),col="red",pch=20,cex=2)
+
+
 ### ========== Subset Selection (with Validation Set) ==========
 
 # Validation Split
@@ -222,14 +226,27 @@ for (i in 1:length(adjRSq)) {
 barplot(unlist(adjRSq), names = modelNames, ylab = "Adjusted R Squared", xlab = "Best Fitted Model")
 
 ### ========== Ridge & Lasso + Cross Validation ==========
-require(glmnet)
-X = as.matrix(data[, setdiff(colnames(data), "Absenteeism time in hours")])
-glmnet()
-ridgeReg = cv.glmnet(X, data$`Absenteeism time in hours`, alpha = 0)
 
-lm.ridge(data$`Absenteeism time in hours` ~ . , data)
-plot(lm.ridge(data$`Absenteeism time in hours` ~ ., data,
-              lambda = seq(0,0.000000000001,0.0000000000001)))
+#l1ce()
+#lm.ridge
+
+require(glmnet)
+
+X = data.matrix(data[, setdiff(colnames(data), "Absenteeism time in hours")])
+# Ridge
+ridgeReg = glmnet(X, data$`Absenteeism time in hours`, alpha = 0)
+plot(ridgeReg, main = "Ridge Regression against lambda Value")
+ridgeReg = cv.glmnet(X, data$`Absenteeism time in hours`, alpha = 0)
+plot(ridgeReg, main = "Cross Validated MSE over Ridge lambda Value")
+
+# Lasso
+lassoReg = glmnet(X, data$`Absenteeism time in hours`, alpha = 1)
+plot(lassoReg, main = "Lasso Regression against lambda Value")
+lassoReg = cv.glmnet(X, data$`Absenteeism time in hours`, alpha = 1)
+plot(lassoReg, main = "Cross Validated MSE over Lasso lambda Value")
+
+summary(lassoReg)
+
 k = 10
 folds = cvFolds(NROW(data), K=k)
 createFolds
@@ -239,12 +256,6 @@ apply
 l
 ?colMeans
 sapply
-l1ce()
 
-intract=data$Age*data$`Body mass index`
-plot(`Absenteeism time in hours`~intract,data = data)
-points(intract,fitted(fit5),col="blue")
 
-#plot(1:20,1:20 ,pch=1:20 ,cex=3)
-points(data$`Absenteeism time in hours`,fitted(fit5),col="red",pch=20,cex=3)
 
