@@ -15,10 +15,6 @@ for (i in 1:NCOL(data)) {
   singleReg(data[[i]], data$`Absenteeism time in hours`, data = data, xlab=names(data)[i])
 }
 summary(data)
-i = 3
-
-singleReg(data[[i]], data$`Absenteeism time in hours`, data = data, xlab=names(data)[i], ylab=names(data)[2])
-names(data)[2]
 
 plot(`Absenteeism time in hours` ~ ID.f, data = data)
 plot(`Absenteeism time in hours` ~ Season.f, data = data)

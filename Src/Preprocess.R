@@ -1,0 +1,6 @@
+if (!exists("data", mode="list")) source("./Src/Basics.R", local = TRUE, echo = FALSE)
+
+# Removing original categorical features
+# Removing extra features: Season (can be evaluated by Month), BMI (can be evaluated by Weight & Height)
+removeCols = c("ID", "Reason for absence", "Month of absence", "Day of the week", "Seasons", "Season.f", "Body mass index")
+data = data[ , !(names(data) %in% removeCols)]
