@@ -85,7 +85,7 @@ points(data$`Absenteeism time in hours`,fitted(fit3),col="red",pch=20,cex=2)
 
 
 ### ========== Subset Selection (with Validation Set) ==========
-
+require(caTools)
 # Validation Split
 set.seed(652)
 splitTrain = sample.split(data$`Absenteeism time in hours`, SplitRatio = 0.5)
