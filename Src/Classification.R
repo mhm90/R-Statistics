@@ -8,21 +8,28 @@ data$Reason.ICD.Disease = factor(ifelse(data$Reason.f. %in% icdCodes, yes = 1, n
 
 pairs(data, col = data$Reason.ICD.Disease)
 
+K = 10
+folds <- cvFolds(NROW(data), K = K)
 
-  glmFit = glm(Reason.ICD.Disease ~ . - Reason.f. - ID.f, data = data, family = binomial())
+for(i in 1:K) {
+  train = data[folds$subsets[folds$which != i] , ] 
+  validation = data[folds$subsets[folds$which == i], ] 
+  
+  glmFit = glm(Reason.ICD.Disease ~ . - Reason.f. - ID.f, data = train, family = binomial())
   a = alias(glmFit)
   summary(glmFit)
   
-  pred = predict(glmFit, type='response')
+  pred = predict(glmFit, newdata = validation, type='response')
   predRes = ifelse(pred > 0.5, 'ICD','Other')
   
   # TP, FP table
   confTable = table(predRes, data$Reason.ICD.Disease)
-  View(confTable)
+  #View(confTable)
+  
   # Accuracy
   mean(predRes == data$Reason.ICD.Disease)
 
-
+}
 
 #install.packages("pROC")
 require(pROC)
