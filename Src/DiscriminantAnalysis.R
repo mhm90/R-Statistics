@@ -1,10 +1,10 @@
 require(MASS) #LDA & QDA
 
-if (!exists("data", mode="list") source("./Src/Preprocess.R", local = TRUE, echo = FALSE)
+if (!exists("data", mode="list")) source("./Src/MultiClassPreprocess.R", local = TRUE, echo = FALSE)
 
 
 ### ===== LDA =====
-ldaFit = lda(data$Reason.f. ~ . - ID.f, data = data)
+ldaFit = lda(data$Reason.f. ~ . - ID.f - `Reason for absence`, data = data)
 summary(ldaFit)
 
 ldaPred = predict(ldaFit, newdata = data)

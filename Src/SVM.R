@@ -7,7 +7,7 @@ if (!exists("data", mode="list")) source("./Src/Preprocess.R", local = TRUE, ech
 ### ===== SVM =====
 # with 10-fold CV
 # More than 2 class: 1 vs 1 approach
-svmFit = svm(Reason.f. ~ . , data = data, cross = 10)
+svmFit = svm(Reason.f. ~ . - `Reason for absence`, data = data, cross = 10)
 summ = summary(svmFit)
 summ
 
