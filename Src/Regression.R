@@ -1,7 +1,7 @@
 #install.packages("glmnet") # For Ridge & Lasso
 #install.packages("ggplot2")
 # check for data
-if (!exists("data", mode="list")) source("./Src/Basics.R", local = TRUE, echo = FALSE)
+if (!exists("data", mode="list") || exists("rowsToDelete", mode = "numeric")) source("./Src/Basics.R", local = TRUE, echo = FALSE)
 
 singleReg = function(x, y, data, ...) {
   fit = lm(y ~ x, data = data)
