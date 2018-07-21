@@ -4,8 +4,7 @@
 #install.packages("rpart")
 #install.packages("rpart.plot")
 
-
-if (!exists("data", mode="list") || exists("rowsToDelete", mode = "numeric")) source("./Src/Preprocess.R", local = TRUE, echo = FALSE)
+if (!exists("data", mode="list")) source("./Src/MultiClassPreprocess.R", local = TRUE, echo = FALSE)
 
 ### Split Data
 #Shuffling data
@@ -35,9 +34,9 @@ table(prediction, trainData$Reason.f.)
 mean(prediction == trainData$Reason.f.)
 
 prediction = predict(treeFit, newdata = testData, type = "class")
-# Train error
+# Test error
 table(prediction, testData$Reason.f.)
-# Tarin Accuracy
+# Test Accuracy
 mean(prediction == testData$Reason.f.)
 
 cvTree = cv.tree(treeFit, FUN = prune.misclass, K = 5)
@@ -67,7 +66,41 @@ rTree = rpart(Reason.f. ~ . -ID.f , data = trainData, method = "class")
 summary(rTree)
 rpart.plot(rTree)
 
-prediction = predict(rTree, newdata = testData, type = "class")
-plot(prediction)
+predictRPart = predict(rTree, newdata = testData, type = "class")
+plot(predictRPart)
+# Confusion Table
+table(predictRPart, testData$Reason.f.)
+# Accuracy
+mean(predictRPart == testData$Reason.f.)
 
+### Random Forest
+library(randomForest)
+randForestFit = randomForest(Reason.f. ~ . -ID.f , data = trainData, ntree = 1000, importance = TRUE, proximity = TRUE)
+print(randForestFit)
 
+round(importance(randForestFit), 2)
+# Do MDS on 1 - proximity:
+dataMds = cmdscale(1 - randForestFit$proximity, eig=TRUE)
+op = par(pty = "s")
+pairs(cbind(subset(trainData, select = -Reason.f.), dataMds$points), cex=0.6, gap=0,
+      col=c("red", "green", "blue")[as.numeric(trainData$Reason.f.)],
+      main="Predictors and MDS of Proximity Based on RandomForest")
+par(op)
+print(dataMds$GOF)
+
+# Choose model
+plot(randForestFit)
+
+predictionRF = predict(randForestFit, newdata = trainData, type = "class")
+plot(predictionRF)
+
+# Train error
+table(predictionRF, trainData$Reason.f.)
+# Tarin Accuracy
+mean(predictionRF == trainData$Reason.f.)
+
+predictionRF = predict(randForestFit, newdata = testData, type = "class")
+# Test error
+table(predictionRF, testData$Reason.f.)
+# Test Accuracy
+mean(predictionRF == testData$Reason.f.)

@@ -1,4 +1,4 @@
-source("./Src/Basics.R", local = TRUE, echo = FALSE)
+source("./Src/Preprocess.R", local = TRUE, echo = FALSE)
 
 # Removing classes with less than 10 samples
 freq = table(data$Reason.f.)
@@ -12,7 +12,3 @@ for (i in 1:NROW(data)) {
 
 # Removing samples with low class rate
 data = data[-rowsToDelete, ]
-# Removing unused class labels
-data$Reason.f. = factor(data$Reason.f.)
-
-levels(data$Reason.f.)
