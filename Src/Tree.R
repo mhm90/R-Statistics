@@ -62,7 +62,8 @@ mean(predC5 == testData$Reason.f.)
 library("rpart")
 library("rpart.plot")
 
-rTree = rpart(Reason.f. ~ . -ID.f , data = trainData, method = "class")
+pData = data.frame(x = pcaData, y = data$Reason.f.)
+rTree = rpart(y ~ . , data = pData, method = "class")
 summary(rTree)
 rpart.plot(rTree)
 
