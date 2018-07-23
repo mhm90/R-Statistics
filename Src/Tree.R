@@ -41,9 +41,22 @@ mean(prediction == testData$Reason.f.)
 
 cvTree = cv.tree(treeFit, FUN = prune.misclass, K = 5)
 plot(cvTree)
+print(cvTree)
 
 prunedTree = prune.misclass(treeFit, best = 6)
 plot(prunedTree); text(prunedTree, pretty = 0)
+
+prediction = predict(prunedTree, newdata = trainData, type = "class")
+# Train error
+table(prediction, trainData$Reason.f.)
+# Tarin Accuracy
+mean(prediction == trainData$Reason.f.)
+
+prediction = predict(treeFit, newdata = testData, type = "class")
+# Test error
+table(prediction, testData$Reason.f.)
+# Test Accuracy
+mean(prediction == testData$Reason.f.)
 
 ### Decision Tree
 library("C50")
