@@ -62,12 +62,13 @@ mean(predC5 == testData$Reason.f.)
 library("rpart")
 library("rpart.plot")
 
-pData = data.frame(x = pcaData, y = data$Reason.f.)
-rTree = rpart(y ~ . , data = pData, method = "class")
+pcaTrain = data.frame(x = pcaData[1:n, ], y = data$Reason.f.[1:n])
+pcaTest = data.frame(x = pcaData[i:NROW(pcaData), ], y = data$Reason.f.[i:NROW(pcaData)])
+rTree = rpart(y ~ . , data = pcaTrain, method = "class")
 summary(rTree)
 rpart.plot(rTree)
 
-predictRPart = predict(rTree, newdata = testData, type = "class")
+predictRPart = predict(rTree, newdata = pcaTest, type = "class")
 plot(predictRPart)
 # Confusion Table
 table(predictRPart, testData$Reason.f.)
