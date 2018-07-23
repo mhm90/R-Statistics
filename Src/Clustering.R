@@ -2,23 +2,12 @@
 if (!exists("data", mode="list") || exists("rowsToDelete", mode = "numeric")) source("./Src/Preprocess.R", local = TRUE, echo = FALSE)
 
 library(cluster)
-
-class(data)
-#trace("colMeans", quote(names(x)))
-pcaData = data.matrix(data[, !names(data) %in% c("Reason.f.", "ID.f")])
-class(pcaData)
-pca = prcomp(pcaData, scale. = TRUE)
-pca$x
-summary(pca)
-biplot(pca, scale = 1)
-plot(pca, type = 'l', "Covered Variance Proportion over PCA Components")
-
 ### Clustering
 
 clustData = data.matrix(data[, !names(data) %in% c("Reason.f.", "ID.f")])
 k = length(levels(data$Reason.f.))
 
-## K-Means
+### K-Means
 kMeans = kmeans(clustData, centers = k, nstart = 10)
 print(kMeans)
 plot(clustData, col = kMeans$cluster)
@@ -31,14 +20,14 @@ kMeans$size
 points(kMeans$centers, pch=3, cex=2, col="black")
 #text(kMeans$centers, labels=c("a","b","c","d"), pos=2)
 
-## Hierarchical Clustering
+### Hierarchical Clustering
 dists = dist(clustData)
 
 hCluster = hclust(dists, method = "single")
 plot(hCluster)
 rect.hclust(hCluster, k = k, border="red")
 
-## Model-Based Clustering
+### Model-Based Clustering
 require(mclust)
 
 mCluster = Mclust(clustData)

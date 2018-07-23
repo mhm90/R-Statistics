@@ -16,6 +16,7 @@ shuffledData = data.frame(data[shuffle, ])
 n = NROW(shuffledData) - 100
 i = n + 1
 trainData = shuffledData[1:n, ]
+trainData$Reason.f. = factor(trainData$Reason.f.)
 testData = shuffledData[c(i:NROW(shuffledData)), ]
 
 ### Simple Tree
@@ -71,26 +72,9 @@ table(predC5, testData$Reason.f.)
 # Accuracy
 mean(predC5 == testData$Reason.f.)
 
-### Recursive Tree
-library("rpart")
-library("rpart.plot")
-
-pcaTrain = data.frame(x = pcaData[1:n, ], y = data$Reason.f.[1:n])
-pcaTest = data.frame(x = pcaData[i:NROW(pcaData), ], y = data$Reason.f.[i:NROW(pcaData)])
-rTree = rpart(y ~ . , data = pcaTrain, method = "class")
-summary(rTree)
-rpart.plot(rTree)
-
-predictRPart = predict(rTree, newdata = pcaTest, type = "class")
-plot(predictRPart)
-# Confusion Table
-table(predictRPart, testData$Reason.f.)
-# Accuracy
-mean(predictRPart == testData$Reason.f.)
-
 ### Random Forest
 library(randomForest)
-randForestFit = randomForest(Reason.f. ~ . -ID.f , data = trainData, ntree = 1000, importance = TRUE, proximity = TRUE)
+randForestFit = randomForest(Reason.f. ~ . -ID.f , data = data, ntree = 1000, importance = TRUE, proximity = TRUE)
 print(randForestFit)
 
 round(importance(randForestFit), 2)
@@ -119,3 +103,22 @@ predictionRF = predict(randForestFit, newdata = testData, type = "class")
 table(predictionRF, testData$Reason.f.)
 # Test Accuracy
 mean(predictionRF == testData$Reason.f.)
+
+### Recursive Tree
+library("rpart")
+library("rpart.plot")
+
+if (!exists("pcaData", mode="matrix")) source("./Src/PCA.R", local = TRUE, echo = FALSE)
+rpTrain = data.frame(x = pcaData[1:n, ], y = data$Reason.f.[1:n])
+rpTest = data.frame(x = pcaData[i:NROW(pcaData), ], y = data$Reason.f.[i:NROW(pcaData)])
+
+rpTree = rpart(y ~ . , data = rpTrain, method = "class")
+summary(rpTree)
+rpart.plot(rTree)
+
+predictRPart = predict(rTree, newdata = pcaTest, type = "class")
+plot(predictRPart)
+# Confusion Table
+table(predictRPart, testData$Reason.f.)
+# Accuracy
+mean(predictRPart == testData$Reason.f.)
