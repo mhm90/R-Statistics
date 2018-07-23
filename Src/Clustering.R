@@ -16,10 +16,10 @@ plot(pca, type = 'l', "Covered Variance Proportion over PCA Components")
 ### Clustering
 
 clustData = data.matrix(data[, !names(data) %in% c("Reason.f.", "ID.f")])
-length(levels(data$Reason.f.))
+k = length(levels(data$Reason.f.))
 
 ## K-Means
-kMeans = kmeans(clustData, centers = length(levels(data$Reason.f.)), nstart = 10)
+kMeans = kmeans(clustData, centers = k, nstart = 10)
 print(kMeans)
 plot(clustData, col = kMeans$cluster)
 plot(clustData, col = data$Reason.f.)
@@ -36,7 +36,7 @@ dists = dist(clustData)
 
 hCluster = hclust(dists, method = "single")
 plot(hCluster)
-rect.hclust(hCluster, k = length(levels(data$Reason.f.)), border="red")
+rect.hclust(hCluster, k = k, border="red")
 
 ## Model-Based Clustering
 require(mclust)
