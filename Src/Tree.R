@@ -27,7 +27,7 @@ summary(treeFit)
 plot(treeFit); text(treeFit, pretty = 0)
 
 prediction = predict(treeFit, newdata = trainData, type = "class")
-plot(prediction)
+plot(prediction, main = "Simple Tree fit prediction histogram")
 
 # Train error
 table(prediction, trainData$Reason.f.)
@@ -66,6 +66,13 @@ C5Fit = C5.0(x = x, y = trainData$Reason.f.)
 summary(C5Fit)
 plot(C5Fit)
 
+
+# Train Error
+predC5 = predict(C5Fit, trainData)
+table(predC5, trainData$Reason.f.)
+# Train Accuracy
+mean(predC5 == trainData$Reason.f.)
+
 # Test Error
 predC5 = predict(C5Fit, testData)
 table(predC5, testData$Reason.f.)
@@ -74,7 +81,7 @@ mean(predC5 == testData$Reason.f.)
 
 ### Random Forest
 library(randomForest)
-randForestFit = randomForest(Reason.f. ~ . -ID.f , data = data, ntree = 1000, importance = TRUE, proximity = TRUE)
+randForestFit = randomForest(Reason.f. ~ . -ID.f , data = trainData, ntree = 1000, importance = TRUE, proximity = TRUE)
 print(randForestFit)
 
 round(importance(randForestFit), 2)
@@ -108,17 +115,24 @@ mean(predictionRF == testData$Reason.f.)
 library("rpart")
 library("rpart.plot")
 
-if (!exists("pcaData", mode="matrix")) source("./Src/PCA.R", local = TRUE, echo = FALSE)
-rpTrain = data.frame(x = pcaData[1:n, ], y = data$Reason.f.[1:n])
-rpTest = data.frame(x = pcaData[i:NROW(pcaData), ], y = data$Reason.f.[i:NROW(pcaData)])
+rData = data.matrix(data[, !names(data) %in% c("Reason.f.", "ID.f")])
+rpTrain = data.frame(x = rData[1:n, ], y = data$Reason.f.[1:n])
+rpTest = data.frame(x = rData[i:NROW(data), ], y = data$Reason.f.[i:NROW(data)])
 
 rpTree = rpart(y ~ . , data = rpTrain, method = "class")
 summary(rpTree)
-rpart.plot(rTree)
+rpart.plot(rpTree)
 
-predictRPart = predict(rTree, newdata = pcaTest, type = "class")
-plot(predictRPart)
-# Confusion Table
-table(predictRPart, testData$Reason.f.)
+predictRPart = predict(rpTree, newdata = rpTrain, type = "class")
+# Train Error
+table(predictRPart, rpTrain$y)
 # Accuracy
-mean(predictRPart == testData$Reason.f.)
+mean(predictRPart == rpTrain$y)
+
+
+predictRPart = predict(rpTree, newdata = rpTest, type = "class")
+plot(predictRPart)
+# Test Error
+table(predictRPart, rpTest$y)
+# Accuracy
+mean(predictRPart == rpTest$y)
