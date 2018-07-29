@@ -12,3 +12,4 @@ for (i in 1:NROW(data)) {
 
 # Removing samples with low class rate
 data = data[-rowsToDelete, ]
+data$Reason.f. = factor(data$Reason.f.)

@@ -8,7 +8,7 @@ data = read_excel('./Datasets/Absenteeism at work/Absenteeism_at_work.xls')
 summary(data)
 
 # Correlation Matrix
-pairs(data)
+if (!exists("echo", mode="logical") || echo) pairs(data)
 
 # Infos
 names(data)

@@ -1,3 +1,5 @@
+echo = FALSE
+
 source("./Src/Basics.R", local = TRUE, echo = FALSE)
 
 # Removing original categorical features
