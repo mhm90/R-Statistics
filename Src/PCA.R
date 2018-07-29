@@ -1,4 +1,4 @@
-if (!exists("data", mode="list") || exists("rowsToDelete", mode = "numeric")) source("./Src/Preprocess.R", local = TRUE, echo = FALSE)
+source("./Src/Preprocess.R", local = TRUE, echo = FALSE)
 
 class(data)
 #trace("colMeans", quote(names(x)))

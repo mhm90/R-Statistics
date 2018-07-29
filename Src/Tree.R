@@ -4,7 +4,7 @@
 #install.packages("rpart")
 #install.packages("rpart.plot")
 
-if (!exists("data", mode="list")) source("./Src/MultiClassPreprocess.R", local = TRUE, echo = FALSE)
+source("./Src/MultiClassPreprocess.R", local = TRUE, echo = FALSE)
 
 ### Split Data
 #Shuffling data

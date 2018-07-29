@@ -2,7 +2,7 @@ install.packages("e1071")
 require(caTools)
 require(e1071)
 
-if (!exists("data", mode="list")) source("./Src/Preprocess.R", local = TRUE, echo = FALSE)
+source("./Src/Preprocess.R", local = TRUE, echo = FALSE)
 
 ### ===== SVM =====
 # with 10-fold CV

@@ -29,3 +29,4 @@ data$Month.f = factor(data$`Month of absence`)
 data$WeekDay.f = factor(data$`Day of the week`)
 data$Season.f = factor(data$Seasons)
 
+mode = "none"
