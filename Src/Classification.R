@@ -52,6 +52,8 @@ summary(minMisClassificationGlm)
 glmFit = minMisClassificationGlm
 fittedProbs = predict(glmFit, newdata = data, type='response')
 
+### Choosing best threshold based on ROC
+
 #install.packages("pROC")
 require(pROC)
 
@@ -68,3 +70,20 @@ plot(sens.ci, type="shape", col="lightblue")
 plot(sens.ci, type="bars")
 
 plot(ci.thresholds(rocCurve))
+
+
+### KNN
+library(class)
+train_X=cbind(Lag1,Lag2)[train,]
+test_X=cbind(Lag1,Lag2)[!train,]
+train_Direction=Direction[train]
+
+set.seed(6161)
+knn_pred=knn(train_X,test_X,train_Direction,k=1)
+table(knn_pred,Direction_2005)
+#Accuracy
+(83+43)/252
+
+knn_pred=knn(train_X,test_X,train_Direction,k=3)
+table(knn_pred,Direction_2005)
+mean(knn_pred==Direction_2005)
