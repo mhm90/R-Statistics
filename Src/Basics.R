@@ -7,6 +7,9 @@ rm(list = ls())
 data = read_excel('./Datasets/Absenteeism at work/Absenteeism_at_work.xls')
 summary(data)
 
+#data$`Same Person`
+
+#data = data[, -grep("Same Person", colnames(data))]
 # Correlation Matrix
 if (!exists("echo", mode="logical") || echo) pairs(data)
 
