@@ -6,40 +6,28 @@ if (!exists("mode", mode = "character") || mode != "none") {
   source("./Src/Basics.R", local = TRUE, echo = FALSE)
 }
 
-
-singleReg = function(x, y, data, ...) {
-  fit = lm(y ~ x, data = data)
-  summary(fit)
-  plot(x, y, ...)
-  #points(data$`Absenteeism time in hours`,fitted(fit),col="red",pch=20,cex=0.9)
-  abline(fit, col = "green")
-}
-
-for (i in 1:NCOL(data)) {
-  singleReg(data[[i]], data$`Absenteeism time in hours`, data = data, xlab=names(data)[i])
-}
 summary(data)
 
-plot(`Absenteeism time in hours` ~ ID.f, data = data)
-plot(`Absenteeism time in hours` ~ Season.f, data = data)
-plot(`Absenteeism time in hours` ~ Month.f, data = data)
-plot(`Absenteeism time in hours` ~ WeekDay.f, data = data)
-plot(`Absenteeism time in hours` ~ `Transportation expense`, data = data)
-plot(`Absenteeism time in hours` ~ `Distance from Residence to Work`, data = data)
-plot(`Absenteeism time in hours` ~ `Service time`, data = data)
-plot(`Absenteeism time in hours` ~ Age, data = data)
-plot(`Absenteeism time in hours` ~ `Work load Average/day`, data = data)
-plot(`Absenteeism time in hours` ~ `Hit target`, data = data)
-plot(`Absenteeism time in hours` ~ `Disciplinary failure`, data = data)
-plot(`Absenteeism time in hours` ~ Education, data = data)
-plot(`Absenteeism time in hours` ~ Son, data = data)
-plot(`Absenteeism time in hours` ~ `Social drinker`, data = data)
-plot(`Absenteeism time in hours` ~ `Social smoker`, data = data)
-plot(`Absenteeism time in hours` ~ Pet, data = data)
-plot(`Absenteeism time in hours` ~ Weight, data = data)
-plot(`Absenteeism time in hours` ~ Height, data = data)
-plot(`Absenteeism time in hours` ~ `Body mass in  dex`, data = data)
-plot(`Absenteeism time in hours` ~ Reason.f., data = data)
+#plot(`Absenteeism time in hours` ~ ID.f, data = data)
+#plot(`Absenteeism time in hours` ~ Season.f, data = data)
+#plot(`Absenteeism time in hours` ~ Month.f, data = data)
+#plot(`Absenteeism time in hours` ~ WeekDay.f, data = data)
+#plot(`Absenteeism time in hours` ~ `Transportation expense`, data = data)
+#plot(`Absenteeism time in hours` ~ `Distance from Residence to Work`, data = data)
+#plot(`Absenteeism time in hours` ~ `Service time`, data = data)
+#plot(`Absenteeism time in hours` ~ Age, data = data)
+#plot(`Absenteeism time in hours` ~ `Work load Average/day`, data = data)
+#plot(`Absenteeism time in hours` ~ `Hit target`, data = data)
+#plot(`Absenteeism time in hours` ~ `Disciplinary failure`, data = data)
+#plot(`Absenteeism time in hours` ~ Education, data = data)
+#plot(`Absenteeism time in hours` ~ Son, data = data)
+#plot(`Absenteeism time in hours` ~ `Social drinker`, data = data)
+#plot(`Absenteeism time in hours` ~ `Social smoker`, data = data)
+#plot(`Absenteeism time in hours` ~ Pet, data = data)
+#plot(`Absenteeism time in hours` ~ Weight, data = data)
+#plot(`Absenteeism time in hours` ~ Height, data = data)
+#plot(`Absenteeism time in hours` ~ `Body mass in  dex`, data = data)
+#plot(`Absenteeism time in hours` ~ Reason.f., data = data)
 plot(`Absenteeism time in hours` ~ `Reason for absence`, data = data)
 
 ### ========== Single Regression ==========
@@ -57,9 +45,23 @@ regFit = lm(`Absenteeism time in hours` ~ `Reason.f.`, data = data)
 
 summary(regFit)
 abline(regFit, col = "blue")
+legend(20, 100, col = c("red", "blue"), legend = c("Wrong", "Right"), lty = 1, cex = 0.8)
 
 plot(regFit)
 confint(regFit)
+
+## Single Regression on Other features
+singleReg = function(x, y, data, ...) {
+  fit = lm(y ~ x, data = data)
+  summary(fit)
+  plot(x, y, ..., main = "Regression on Absenteeism time in hours")
+  #points(data$`Absenteeism time in hours`,fitted(fit),col="red",pch=20,cex=0.9)
+  abline(fit, col = "green")
+}
+
+for (i in 1:NCOL(data)) {
+  singleReg(data[[i]], data$`Absenteeism time in hours`, data = data, xlab=names(data)[i])
+}
 
 #predict(regFit, data.frame(), interval = "confidence")
 
@@ -118,7 +120,7 @@ forwardStepAIC =
     data=trainData)
 
 summ = summary(forwardStepAIC)
-summ
+if (slideEcho) summ
 forwardRegAIC = lm(forwardStepAIC[["terms"]], data = data)
 adjRSq[[i]] = summ$adj.r.squared
 i = i + 1
@@ -134,7 +136,7 @@ backwardStepAIC =
        data=trainData)
 
 summ = summary(backwardStepAIC)
-summ
+if (slideEcho) summ
 backwardRegAIC = lm(backwardStepAIC[["terms"]], data = data)
 adjRSq[[i]] = summ$adj.r.squared
 i = i + 1
@@ -150,7 +152,7 @@ bidirStepAIC =
        data=trainData)
 
 summ = summary(bidirStepAIC)
-summ
+if (slideEcho) summ
 bidirRegAIC = lm(bidirStepAIC[["terms"]], data = data)
 adjRSq[[i]] = summ$adj.r.squared
 i = i + 1
@@ -170,7 +172,7 @@ forwardStepBIC =
        data=trainData)
 
 summ = summary(forwardStepBIC)
-summ
+if (slideEcho) summ
 forwardRegBIC = lm(forwardStepAIC[["terms"]], data = data)
 adjRSq[[i]] = summ$adj.r.squared
 i = i + 1
@@ -186,7 +188,7 @@ backwardStepBIC =
        data=trainData)
 
 summ = summary(backwardStepBIC)
-summ
+if (slideEcho) summ
 backwardRegBIC = lm(backwardStepBIC[["terms"]], data = data)
 adjRSq[[i]] = summ$adj.r.squared
 i = i + 1
@@ -202,14 +204,14 @@ bidirStepBIC =
        data=trainData)
 
 summ = summary(bidirStepBIC)
-summ
+if (slideEcho) summ
 bidirRegBIC = lm(bidirStepBIC[["terms"]], data = data)
 adjRSq[[i]] = summ$adj.r.squared
 i = i + 1
 
 ### ===== Result: =====
 models = list(forwardRegAIC, backwardRegAIC, bidirRegAIC, forwardRegBIC, backwardRegBIC, bidirRegBIC)
-modelNames = c("Forward AIC", "Backward AIC", "Bidir AIC", "Forward BIC", "Backward BIC", "Bidir BIC")
+modelNames = c("Frw. AIC", "Bckw. AIC", "Bidir AIC", "Frw. BIC", "Bckw. BIC", "Bidir BIC")
 testMse = list()
 for (i in 1:length(models)) {
   resp = predict(models[[i]], newdata = testData, type = "response")

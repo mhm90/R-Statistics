@@ -1,7 +1,6 @@
 #install.packages("cvTools")
 require(cvTools)
-
-source("./Src/Preprocess.R", local = TRUE, echo = FALSE)
+source("./Src/Preprocess.R", local = FALSE, echo = FALSE)
 
 ### Logestic Regression
 
@@ -48,9 +47,11 @@ for(i in 1:K) {
     minMisClassificationGlm = glmFit
   }
 }
-mean(misClassifications)
+cvError = mean(misClassifications)
+cat(sprintf("CV Error: %f \n", cvError))
 
-summary(minMisClassificationGlm)
+summ = summary(minMisClassificationGlm)
+summ
 glmFit = minMisClassificationGlm
 fittedProbs = predict(glmFit, newdata = data, type='response')
 
@@ -71,24 +72,3 @@ plot(sens.ci, type="shape", col="lightblue")
 plot(sens.ci, type="bars")
 
 plot(ci.thresholds(rocCurve))
-
-
-### KNN
-library(class)
-
-set.seed(4135)
-rand = runif(NROW(data))
-shuffle = order(rand)
-shuffledData = data.frame(data[shuffle, ])
-
-n = NROW(shuffledData) - 100
-i = n + 1
-trainData = shuffledData[1:n, !names(data) %in% c("Reason.f.", "ID.f", "Reason.ICD.Disease")]
-testData = shuffledData[c(i:NROW(shuffledData)), !names(data) %in% c("Reason.f.", "ID.f", "Reason.ICD.Disease")]
-
-set.seed(87654)
-knnPred = knn(trainData, testData, shuffledData$Reason.f.[c(1:n)], k=15)
-table(knnPred, shuffledData$Reason.f.[c(i:NROW(shuffledData))])
-#Accuracy
-mean(knnPred == shuffledData$Reason.f.[c(i:NROW(shuffledData))])
-
