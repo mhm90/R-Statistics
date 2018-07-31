@@ -7,8 +7,8 @@ body {
 document.onreadystatechange = function () {
   if (document.readyState == "complete") {
     Reveal.addEventListener( 'slidechanged', function( event ) {
-    document.body.scrollTop = document.documentElement.scrollTop = 0;
-} );
+      document.body.scrollTop = document.documentElement.scrollTop = 0;
+    });
   }
 }
 
@@ -27,28 +27,29 @@ Outline
 ========================================================
 id: outline
 * [__Basics__](#/basics)
-  + Data Set Info
-  + Data Clearing
-  + PCA
+  + [Data Set Info](#/data-info)
+  + [Data Clearing](#/clearing)
+  + [PCA](#/pca)
 * [__Regression__](#/reg)
-  + Simple Linear Regression
-  + Multiple Linear Regression
-  + Subset Selectiong (Validation Set)
-  + Ridge & Lasso Regression
+  + [Simple Linear Regression](#/single-reg)
+  + [Multiple Linear Regression](#/mult-reg)
+  + [Subset Selectiong (Validation Set)](#/subset)
+  + [Ridge & Lasso Regression](#/ridge-lasso)
   
 
 Outline
 ========================================================
 * [__Classification__](#/classification)
-  + Logestic Regression
-  + KNN
-  + LDA
-  + QDA
-  + SVM
-* __Trees__
-* __Clustering__
-  + K-Means
-  + Hierarchial Clustering
+  + [Logestic Regression](#/logestic)
+  + [KNN](#/knn)
+  + [LDA](#/da)
+  + [QDA](#/da)
+  + [SVM](#/svm)
+* [__Trees__](#/trees)
+* [__Clustering__](#/clustering)
+  + [K-Means](#/clustering)
+  + [Hierarchial Clustering](#/clustering)
+  + [M-Clustering](#/clustering)
 
 Basics - Dataset
 ========================================================
@@ -113,6 +114,8 @@ And 7 categories without ICD:
 
 Basics - Data Info
 ========================================================
+id:data-info
+
 ```{r echo=FALSE,fig.align='center', figs.only=TRUE,out.extra='angle=90',out.width="100%"}
 setwd("..")
 slideEcho = FALSE
@@ -127,7 +130,9 @@ NROW(data)
 length(unique(data$ID))
 ```
 * It means that there is too many record for any person
-* But,
+
+### But,
+
 * Data has same feature value for the same person's records on these features:
   + Transportation expense
   + Distance from Residence to Work
@@ -146,7 +151,7 @@ length(unique(data$ID))
 
 Basics - Data Clearing
 ========================================================
-id:basics-clearing
+id:clearing
 source: ../Src/Basics.R
 
 ## Categorical Features
@@ -173,12 +178,32 @@ It is always better to have less redundant features and avoiding to have a model
 
 We remove these features to make our models more responsive
 
+
+PCA
+========================================================
+id:pca
+source: ../Src/PCA.R
+
+Accordng to what we said in [_Data Information_](#/data-info) part, there is many redundancy in our data and also there is 21 features in our dataset. Many of these features are not quite informative for our work. PCA is a good method to project feature space into another space with components that are sorted by their importance and describing most part of data variation. We use pca to select features later on [**Discriminant Analysis**](/#da). Here is more details about it:
+
+```{r echo = FALSE, fig.align='center', figs.only=TRUE,out.extra='angle=90',out.width="100%"}
+setwd("..")
+source("./Src/PCA.R", echo = FALSE)
+rm(list = ls()) # removing extra items
+```
+
 Regression
 ========================================================
 id:reg
 source: ../Src/Regression.R
 
 ## Single Linear Regression
+
+```{r echo=FALSE, results='hide',fig.align='center', figs.only=TRUE,out.extra='angle=90',out.width="100%"}
+setwd("..")
+echo = FALSE
+source("./Src/Basics.R", echo = FALSE, local = TRUE)
+```
 
 ### Categorical Data
 * Wrong Way:
@@ -204,6 +229,7 @@ Note that the blue line is specifying only one of newly added predictors
 
 Single Regression
 ========================================================
+id:single-reg
 source: ../Src/Regression.R
 
 ## Single Linear Regression
@@ -225,6 +251,7 @@ for (i in 1:NCOL(data)) {
 
 Multiple Regression
 ========================================================
+id:mult-reg
 source: ../Src/Regression.R
 
 ```{r echo=FALSE, results='hide'}
@@ -260,7 +287,9 @@ The problem is that this method does not make our remaining predictors more sign
 
 Multiple Regression - Subset Selection
 ========================================================
+id:subset
 source: ../Src/Regression.R
+
 
 * We use validation set approach to test our models
 * Subset selecting by
@@ -420,6 +449,7 @@ summary(bidirRegAIC)
 
 Ridge & Lasso Regression
 ========================================================
+id:ridge-lasso
 source: ../Src/Regression.R
 
 * Applying Ridge & Lasso Regression by different values for lambda
@@ -449,12 +479,14 @@ summary(lassoReg)
 
 Classification
 ========================================================
+id:classification
 
 This dataset also provides 'Reason For Absence' which we use as target of classification
 
 
 Logestic Regression
 ========================================================
+id:logestic
 source: ../Src/Classification.R
 
 In logestic regression we fit probabilities over target classes (0, 1) in binary classification. In order to discuss _True positive_, _False Positive_, _True Negative_, _False Negative_ we need to use a binary classification. But our target has more classes:
@@ -470,11 +502,11 @@ When we find our best model the result of model for test data is fitted probabil
 
 So, the default action is to assign values with probability less than 0.5 to class 0 and higher than 0.5 to class 1 respectively.
 
-But as you can see in data, The samples with _'Other'_ label has lower frequency. so the threshold 0.5 for assigning classes may not be useful. ROC curves help us to find optimum threshold.
+But as you can see in data, The samples with _'Other'_ label has lower frequency. So the threshold 0.5 for assigning classes may not be useful. ROC curves help us to find optimum threshold.
 
-So, enough talking. Move on to codes...
+Enough talking. Move on to codes...
 
-```{r fig.align='center', figs.only=TRUE,out.extra='angle=90',out.width="100%"}
+```{r cache=TRUE,fig.align='center', figs.only=TRUE,out.extra='angle=90',out.width="100%"}
 setwd("..")
 source("./Src/Classification.R", local = FALSE)
 ```
@@ -482,20 +514,23 @@ source("./Src/Classification.R", local = FALSE)
 
 KNN
 ========================================================
+id:knn
 source: ../Src/KNN.R
 
-In kNN for a new test data we consider its k nearest neighbor as the voters for this new data class. 
+In **kNN** for a new test data we consider its k nearest neighbor as the voters for this new data class. 
 
 It is completely straight Assigning k = 15:
-```{r echo = FALSE}
+
+```{r figs.only=TRUE}
 setwd("..")
-getwd()
+#getwd()
 source("./Src/KNN.R", echo = FALSE)
 ```
 
 
 Discriminant Analysis
 ========================================================
+id:da
 source: ../Src/DiscriminantAnalysis.R
 
 Here we use original _"Reason for absence"_ feature for classification and because of this the problem is not binary classification anymore
@@ -513,11 +548,20 @@ The first option seems good and easy but it removes many important parts of data
 The second option also seems good in Theory, but in practice which projection is best? The best possible solution seems to be the PCA feature space. We project original feature to PCA components with higher importance and leave out the less important features until we have new columns with linear independence.
 
 ## The Code
+```{r eval=FALSE}
+setwd("..")
+source("./Src/DiscriminantAnalysis.R", echo = FALSE)
+```
 
+```{r echo = FALSE, fig.align='center', out.extra='angle=90', out.width="100%"}
+setwd("..")
+source("./Src/DiscriminantAnalysis.R", echo = FALSE)
+```
 
 
 SVM
 ========================================================
+id:svm
 source: ../Src/SVM.R
 
 We use multi class SVM which fits an SVM model for binary classification for each class (One vs. All). 
@@ -526,43 +570,73 @@ We first train a SVM model by 10-fold Cross Validation on full data set.
 
 Then we dig into SVM details by splitting data into _Train_ and _Test_ sets (4:1 ratio) and applying a grid search for best cost parameter in SVM model by _linear_ and _radial_ kernels to find the best model and test it over _Test_ data. Here is the code:
 
+```{r eval=FALSE}
+setwd("..")
+source("./Src/SVM.R", echo = FALSE)
+```
+
+```{r echo = FALSE, fig.align='center', figs.only=TRUE,out.extra='angle=90',out.width="100%"}
+setwd("..")
+source("./Src/SVM.R", echo = FALSE)
+```
+
 
 Tree
 ========================================================
+id:trees
 source: ../Src/Tree.R
 
+Here we used tree based method for multi-class classification by _'Reason for absence'_ feature. First we shuffle data and split it into train and test set.
+* First we fit single tree and then we use 5-fold Cross validation to choose be tree size in order to obtain a pruned tree.
 
+* In the next part, we use **C4.5** decision tree algorithm to classify our data.
 
+* Our next method is **Random Forest** algorithm which grows many (1000 in our case) trees to perform prediction. We can choose best model size by changing different size for our trees according to the plot.
 
+* Our final method in tree based methods is **Recursive Partitioning** Algorithm.
 
+## Implementaion
+```{r eval=FALSE}
+setwd("..")
+source("./Src/Tree.R", echo = FALSE)
+```
 
-Test
+```{r echo = FALSE, fig.align='center', figs.only=TRUE,out.extra='angle=90',out.width="100%"}
+setwd("..")
+source("./Src/Tree.R", echo = FALSE)
+```
+
+## Results
+According to what you see on previous part, the accuracy of **Random Forest Algorithm** is better than other tree based methods
+
+Clustering
 ========================================================
-The Google Play Games plugin for Unity allows you to access the Google Play Games
-API through Unity's [social interface](http://docs.unity3d.com/Documentation/ScriptReference/Social.html).
-The plugin provides support for the
-following features of the Google Play Games API:<br/>
+id:clustering
+source: ../Src/Clustering.R
 
+In clustering we are trying to find some similarity between data instances in order to make some groups of them. The clustering unlike classification is an unsupervised method.
 
-First Slide
-========================================================
-
-For more details on authoring R presentations please visit <https://support.rstudio.com/hc/en-us/articles/200486468>.
-
-- Bullet 1
-- Bullet 2
-- Bullet 3
-
-Slide With Code
-========================================================
+We have removed our supervised feature _'Reason for Absence'_ from data set to compare the results of Clustering with our supervised classification and as we'll see the results are compeletely irrelevanvt. We also set number of clusters in our clustering method to the number of classes of supervised data:
+```{r echo=FALSE, results='hide'}
+setwd("..")
+source("./Src/Preprocess.R", echo = FALSE)
+```
 
 ```{r}
-summary(cars)
+k = length(unique(levels(data$Reason.f.)))
+k
+NROW(data)
 ```
 
-Slide With Plot
-========================================================
+We apply 3 clustering algorithms to data:
+* K-Means
+* Hierarchical Clustering (Using single-linkage)
+* Model-based Clustering
 
-```{r, echo=FALSE}
-plot(cars)
+## Results:
+
+```{r echo = FALSE, fig.align='center', figs.only=TRUE,out.extra='angle=90',out.width="100%"}
+setwd("..")
+source("./Src/Clustering.R", echo = FALSE)
 ```
+
