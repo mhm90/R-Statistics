@@ -10,7 +10,7 @@ source("./Src/Preprocess.R", local = FALSE, echo = FALSE)
 icdCodes = c("I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX", "XXI")
 data$Reason.ICD.Disease = factor(ifelse(data$Reason.f. %in% icdCodes, yes = 1, no = 0), levels = c(0,1), labels = c("Other", "ICD"))
 
-pairs(data, col = data$Reason.ICD.Disease)
+pairs(data, col = data$Reason.ICD.Disease, main = "Scatter plot with coloring data by its class")
 
 K = 10
 folds = cvFolds(NROW(data), K = K)

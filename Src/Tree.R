@@ -23,8 +23,8 @@ testData = shuffledData[c(i:NROW(shuffledData)), ]
 library(tree)
 
 treeFit = tree(trainData$Reason.f. ~ . -ID.f , data = trainData)
-summary(treeFit)
-plot(treeFit); text(treeFit, pretty = 0)
+print(summary(treeFit))
+plot(treeFit, main = "Simple tree calssification"); text(treeFit, pretty = 0)
 
 prediction = predict(treeFit, newdata = trainData, type = "class")
 plot(prediction, main = "Simple Tree fit prediction histogram")
@@ -32,52 +32,58 @@ plot(prediction, main = "Simple Tree fit prediction histogram")
 # Train error
 table(prediction, trainData$Reason.f.)
 # Tarin Accuracy
-mean(prediction == trainData$Reason.f.)
+acc = mean(prediction == trainData$Reason.f.)
+print(sprintf("Simple Tree Accuracy on train data: %f", acc))
 
 prediction = predict(treeFit, newdata = testData, type = "class")
 # Test error
 table(prediction, testData$Reason.f.)
 # Test Accuracy
-mean(prediction == testData$Reason.f.)
+acc = mean(prediction == testData$Reason.f.)
+print(sprintf("Simple Tree Accuracy on test data: %f", acc))
 
 cvTree = cv.tree(treeFit, FUN = prune.misclass, K = 5)
-plot(cvTree)
+plot(cvTree, main = "Tree size parameter by 5-fold CV")
 print(cvTree)
 
 prunedTree = prune.misclass(treeFit, best = 6)
-plot(prunedTree); text(prunedTree, pretty = 0)
+plot(prunedTree, main = "Pruned Tree using best alpha"); text(prunedTree, pretty = 0)
 
 prediction = predict(prunedTree, newdata = trainData, type = "class")
 # Train error
 table(prediction, trainData$Reason.f.)
 # Tarin Accuracy
-mean(prediction == trainData$Reason.f.)
+acc = mean(prediction == trainData$Reason.f.)
+print(sprintf("Pruned Tree Accuracy on train data: %f", acc))
 
 prediction = predict(treeFit, newdata = testData, type = "class")
 # Test error
 table(prediction, testData$Reason.f.)
 # Test Accuracy
-mean(prediction == testData$Reason.f.)
+acc = mean(prediction == testData$Reason.f.)
+print(sprintf("Pruned Tree Accuracy on test data: %f", acc))
 
 ### Decision Tree
 library("C50")
 x =  trainData[, !(names(trainData) %in% c("Reason.f.", "ID.f"))]
 C5Fit = C5.0(x = x, y = trainData$Reason.f.)
 summary(C5Fit)
-plot(C5Fit)
+plot(C5Fit, main = "C4.5 Model")
 
 
 # Train Error
 predC5 = predict(C5Fit, trainData)
 table(predC5, trainData$Reason.f.)
 # Train Accuracy
-mean(predC5 == trainData$Reason.f.)
+acc = mean(predC5 == trainData$Reason.f.)
+print(sprintf("C4.5 Tree Alg. Accuracy on train data: %f", acc))
 
 # Test Error
 predC5 = predict(C5Fit, testData)
 table(predC5, testData$Reason.f.)
 # Accuracy
-mean(predC5 == testData$Reason.f.)
+acc = mean(predC5 == testData$Reason.f.)
+print(sprintf("C4.5 Tree Alg. Accuracy on test data: %f", acc))
 
 ### Random Forest
 library(randomForest)
@@ -95,21 +101,23 @@ par(op)
 print(dataMds$GOF)
 
 # Choose model
-plot(randForestFit)
+plot(randForestFit, main = "Random Forest Model")
 
 predictionRF = predict(randForestFit, newdata = trainData, type = "class")
-plot(predictionRF)
+plot(predictionRF, main = "Random Forest Prediction")
 
 # Train error
 table(predictionRF, trainData$Reason.f.)
 # Tarin Accuracy
-mean(predictionRF == trainData$Reason.f.)
+acc = mean(predictionRF == trainData$Reason.f.)
+print(sprintf("Random Forest Alg. Accuracy on train data: %f", acc))
 
 predictionRF = predict(randForestFit, newdata = testData, type = "class")
 # Test error
 table(predictionRF, testData$Reason.f.)
 # Test Accuracy
-mean(predictionRF == testData$Reason.f.)
+acc = mean(predictionRF == testData$Reason.f.)
+print(sprintf("Random Forest Alg. Accuracy on test data: %f", acc))
 
 ### Recursive Tree
 library("rpart")
@@ -121,18 +129,21 @@ rpTest = data.frame(x = rData[i:NROW(data), ], y = data$Reason.f.[i:NROW(data)])
 
 rpTree = rpart(y ~ . , data = rpTrain, method = "class")
 summary(rpTree)
-rpart.plot(rpTree)
+rpart.plot(rpTree, main = "Recursive Partitioning Model")
 
 predictRPart = predict(rpTree, newdata = rpTrain, type = "class")
 # Train Error
 table(predictRPart, rpTrain$y)
 # Accuracy
-mean(predictRPart == rpTrain$y)
+acc = mean(predictRPart == rpTrain$y)
+print(sprintf("Recursive Partitioning Tree Alg. Accuracy on train data: %f", acc))
 
 
 predictRPart = predict(rpTree, newdata = rpTest, type = "class")
-plot(predictRPart)
+plot(predictRPart, main = "Recursive Patitioning prediction")
 # Test Error
 table(predictRPart, rpTest$y)
 # Accuracy
-mean(predictRPart == rpTest$y)
+acc = mean(predictRPart == rpTest$y)
+print(sprintf("Recursive Partitioning Tree Alg. Accuracy on test data: %f", acc))
+

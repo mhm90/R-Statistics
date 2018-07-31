@@ -25,7 +25,7 @@ plot(cmdscale(dist(subset(data, select = -Reason.f.))), # projecting feature spa
 
 # Confusion Table
 confTable = table(pred, data$Reason.f.)
-cat("Confustion Table of SVM model for Original Data (10-fold CV)\n")
+cat("\n\n   Confustion Table of SVM model for Original Data (10-fold CV)\n")
 print(confTable)
 # Accuracy On Original Data
 acc = mean(pred ==  data$Reason.f.)
@@ -40,12 +40,12 @@ testSet = subset(data, !split)
 ## Linear Kernel
 tunedSvm = tune(svm, Reason.f. ~ . , data = trainSet, kernel = "linear", ranges = list(cost=c(0.001, 0.01, 0.1, 1,5,10,100)))
 summ = summary(tunedSvm)
-cat("Tuning SVM Linear:\n")
+cat("\n\n\n Tuning SVM Linear:\n")
 print(summ)
 
 bestmod = tunedSvm$best.model
 summ = summary(bestmod)
-cat("Best tuned Linear SVM Model by Tuning:\n")
+cat("\n\n   Best tuned Linear SVM Model by Tuning:\n")
 print(summ)
 
 bestmod$cost
@@ -68,11 +68,11 @@ print(sprintf("Best tuned Linear SVM Model Test Accuracy: %f", acc))
 ## Radial Kernel
 tunedSvm = tune(svm, Reason.f. ~ . , data = trainSet, kernel = "radial", ranges = list(cost=c(0.001, 0.01, 0.1, 1,5,10,100)))
 summ = summary(tunedSvm)
-cat("Tuning SVM Radial:\n")
+cat("\n\n\n Tuning SVM Radial:\n")
 print(summ)
 bestmod = tunedSvm$best.model
 summ = summary(bestmod)
-cat("Best tuned Radial SVM Model by Tuning:\n")
+cat("\n\n   Best tuned Radial SVM Model by Tuning:\n")
 print(summ)
 bestmod$cost
 bestmod$degree

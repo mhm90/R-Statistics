@@ -22,35 +22,41 @@ daData$y = factor(daData$y)
 
 ### ===== LDA =====
 ldaFit = lda(y ~ . , data = daData)
-summary(ldaFit)
+cat("   LDA Model:\n")
+print(summary(ldaFit))
 
 ldaPred = predict(ldaFit, newdata = daData)
 summary(ldaPred)
 
 confusionTable = table(ldaPred$class, daData$y)
-confusionTable
+cat("\n\n  LDA fit confusion table \n")
+print(confusionTable)
 
 #Accuracy
-mean(ldaPred$class ==  daData$y)
+acc = mean(ldaPred$class ==  daData$y)
+print(sprintf("  LDA model accuracy: %f", acc))
 
-View(ldaPred$posterior)
+#View(ldaPred$posterior)
 names(ldaPred$posterior[1,])
 
-summary(ldaPred$posterior)
+#summary(ldaPred$posterior)
 
 
 ### ===== QDA =====
 qdaFit = qda(ldaFit[["terms"]], data = daData)
-summary(qdaFit)
+cat("\n\n\n   QDA Model:\n")
+print(summary(qdaFit))
 
 qdaPred = predict(qdaFit, newdata = daData)
 summary(qdaPred)
 
 confusionTable = table(qdaPred$class, daData$y)
-confusionTable
+cat("\n\n   QDA fit confusion table \n")
+print(confusionTable)
 
 #Accuracy
-mean(qdaPred$class ==  daData$y)
+acc = mean(qdaPred$class ==  daData$y)
+print(sprintf("  QDA model accuracy: %f", acc))
 
-summary(qdaPred$posterior)
+#print(summary(qdaPred$posterior))
 
