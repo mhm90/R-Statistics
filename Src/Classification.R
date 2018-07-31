@@ -1,18 +1,19 @@
 #install.packages("cvTools")
 require(cvTools)
+source("./Src/Preprocess.R", local = FALSE, echo = FALSE)
 
-source("./Src/Preprocess.R", local = TRUE, echo = FALSE)
+### Logestic Regression
 
 # Coding reasons with ICD diseases or other reasons
 # 0 -> Other reasons
 # 1 -> ICD Diseases
 icdCodes = c("I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX", "XXI")
 data$Reason.ICD.Disease = factor(ifelse(data$Reason.f. %in% icdCodes, yes = 1, no = 0), levels = c(0,1), labels = c("Other", "ICD"))
-# valerie cossette - laurence bedard
+
 pairs(data, col = data$Reason.ICD.Disease)
 
 K = 10
-folds <- cvFolds(NROW(data), K = K)
+folds = cvFolds(NROW(data), K = K)
 misClassifications = c()
 fitLogits = c()
 removedFeatures = c("Reason.f.", "ID.f")
@@ -46,14 +47,15 @@ for(i in 1:K) {
     minMisClassificationGlm = glmFit
   }
 }
-mean(misClassifications)
+cvError = mean(misClassifications)
+cat(sprintf("CV Error: %f \n", cvError))
 
-summary(minMisClassificationGlm)
+summ = summary(minMisClassificationGlm)
+summ
 glmFit = minMisClassificationGlm
 fittedProbs = predict(glmFit, newdata = data, type='response')
 
-### Choosing best threshold based on ROC
-
+### Finding best threshold by ROC curve
 #install.packages("pROC")
 require(pROC)
 
@@ -70,20 +72,3 @@ plot(sens.ci, type="shape", col="lightblue")
 plot(sens.ci, type="bars")
 
 plot(ci.thresholds(rocCurve))
-
-
-### KNN
-library(class)
-train_X=cbind(Lag1,Lag2)[train,]
-test_X=cbind(Lag1,Lag2)[!train,]
-train_Direction=Direction[train]
-
-set.seed(6161)
-knn_pred=knn(train_X,test_X,train_Direction,k=1)
-table(knn_pred,Direction_2005)
-#Accuracy
-(83+43)/252
-
-knn_pred=knn(train_X,test_X,train_Direction,k=3)
-table(knn_pred,Direction_2005)
-mean(knn_pred==Direction_2005)

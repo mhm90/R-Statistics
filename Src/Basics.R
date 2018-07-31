@@ -7,8 +7,13 @@ rm(list = ls())
 data = read_excel('./Datasets/Absenteeism at work/Absenteeism_at_work.xls')
 summary(data)
 
+#data$`Same Person`
+
+#data = data[, -grep("Same Person", colnames(data))]
 # Correlation Matrix
-if (!exists("echo", mode="logical") || echo) pairs(data)
+if (!exists("echo", mode="logical") || echo) pairs(data, main = "Correlation Matrix")
+
+if (!exists("slideEcho", mode="logical")) slideEcho = TRUE
 
 # Infos
 names(data)
@@ -20,7 +25,7 @@ sort(unique(data$`Reason for absence`))
 length(unique(data$ID))
 
 # Regression Target Histogram
-hist(data$`Absenteeism time in hours`)
+hist(data$`Absenteeism time in hours`, main = "Regression Target Histogram")
 
 # Fixing categorical data
 data$ID.f = factor(data$ID)
