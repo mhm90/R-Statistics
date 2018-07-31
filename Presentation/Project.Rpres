@@ -1,3 +1,19 @@
+<style>
+body {
+    overflow: scroll;
+}
+</style>
+<script>
+document.onreadystatechange = function () {
+  if (document.readyState == "complete") {
+    Reveal.addEventListener( 'slidechanged', function( event ) {
+    document.body.scrollTop = document.documentElement.scrollTop = 0;
+} );
+  }
+}
+
+</script>
+
 Statistics R Project
 ========================================================
 id: cover
@@ -6,28 +22,32 @@ date: July 2018
 autosize: true
 
 
+
 Outline
 ========================================================
 id: outline
 * [__Basics__](#/basics)
   + Data Set Info
   + Data Clearing
+  + PCA
 * [__Regression__](#/reg)
   + Simple Linear Regression
   + Multiple Linear Regression
   + Subset Selectiong (Validation Set)
   + Ridge & Lasso Regression
-* [__Classification__](#/classification)
-  + Logestic Regression
-  + LDA
-  + QDA
-  + SVM
+  
 
 Outline
 ========================================================
+* [__Classification__](#/classification)
+  + Logestic Regression
+  + KNN
+  + LDA
+  + QDA
+  + SVM
 * __Trees__
 * __Clustering__
-  + KNN
+  + K-Means
   + Hierarchial Clustering
 
 Basics - Dataset
@@ -42,36 +62,35 @@ It is used in academic research at the Universidade Nove de Julho - Postgraduate
 ### Features
 1. Individual identification (ID)
 2. Reason for absence (ICD): Absences attested by the International Code of Diseases (ICD) stratified into 21 categories (I to XXI) as follows:
-
-  I Certain infectious and parasitic diseases  
-  II Neoplasms  
-  III Diseases of the blood and blood-forming organs and certain disorders involving the immune mechanism  
-  IV Endocrine, nutritional and metabolic diseases  
-  V Mental and behavioural disorders  
-  VI Diseases of the nervous system  
-  VII Diseases of the eye and adnexa  
-  VIII Diseases of the ear and mastoid process  
-  IX Diseases of the circulatory system  
-  X Diseases of the respiratory system  
-  XI Diseases of the digestive system  
-  XII Diseases of the skin and subcutaneous tissue  
-  XIII Diseases of the musculoskeletal system and connective tissue  
-  XIV Diseases of the genitourinary system  
-  XV Pregnancy, childbirth and the puerperium  
-  XVI Certain conditions originating in the perinatal period  
-  XVII Congenital malformations, deformations and chromosomal abnormalities  
-  XVIII Symptoms, signs and abnormal clinical and laboratory findings, not elsewhere classified  
-  XIX Injury, poisoning and certain other consequences of external causes  
-  XX External causes of morbidity and mortality  
-  XXI Factors influencing health status and contact with health services.
-And 7 categories without (CID) 
-  Patient follow-up (22)
-  Medical consultation (23)
-  Blood donation (24)
-  Laboratory examination (25)
-  Unjustified absence (26)
-  Physiotherapy (27)
-  Dental consultation (28)
+  * I Certain infectious and parasitic diseases  
+  * II Neoplasms  
+  * III Diseases of the blood and blood-forming organs and certain disorders involving the immune mechanism  
+  * IV Endocrine, nutritional and metabolic diseases  
+  * V Mental and behavioural disorders  
+  * VI Diseases of the nervous system  
+  * VII Diseases of the eye and adnexa  
+  * VIII Diseases of the ear and mastoid process  
+  * IX Diseases of the circulatory system  
+  * X Diseases of the respiratory system  
+  * XI Diseases of the digestive system  
+  * XII Diseases of the skin and subcutaneous tissue  
+  * XIII Diseases of the musculoskeletal system and connective tissue  
+  * XIV Diseases of the genitourinary system  
+  * XV Pregnancy, childbirth and the puerperium  
+  * XVI Certain conditions originating in the perinatal period
+  * XVII Congenital malformations, deformations and chromosomal abnormalities  
+  * XVIII Symptoms, signs and abnormal clinical and laboratory findings, not elsewhere classified  
+  * XIX Injury, poisoning and certain other consequences of external causes  
+  * XX External causes of morbidity and mortality  
+  * XXI Factors influencing health status and contact with health services.
+And 7 categories without ICD:
+  * Patient follow-up (22)
+  * Medical consultation (23)
+  * Blood donation (24)
+  * Laboratory examination (25)
+  * Unjustified absence (26)
+  * Physiotherapy (27)
+  * Dental consultation (28)
 3. Month of absence
 4. Day of the week (Monday (2), Tuesday (3), Wednesday (4), Thursday (5), Friday (6))
 5. Seasons (summer (1), autumn (2), winter (3), spring (4))
@@ -94,21 +113,426 @@ And 7 categories without (CID)
 
 Basics - Data Info
 ========================================================
-```{r, echo=FALSE}
-
+```{r echo=FALSE,fig.align='center', figs.only=TRUE,out.extra='angle=90',out.width="100%"}
+setwd("..")
+slideEcho = FALSE
+source("./Src/Basics.R", echo = FALSE, local = TRUE)
 ```
+* Number of records
+```{r}
+NROW(data)
+```
+* Number of participants
+```{r}
+length(unique(data$ID))
+```
+* It means that there is too many record for any person
+* But,
+* Data has same feature value for the same person's records on these features:
+  + Transportation expense
+  + Distance from Residence to Work
+  + Service time
+  + Age
+  + Education
+  + Son
+  + Social drinker
+  + Social smoker
+  + Pet
+  + Weight
+  + Height
+  + Body mass index
+* This makes feature dependent on eachother and some difficulties on matrice operations
+
 
 Basics - Data Clearing
 ========================================================
-id:basics
+id:basics-clearing
 source: ../Src/Basics.R
 
+## Categorical Features
 
+Dataset has following categorical features:
+* ID
+* Reason for absence
+* Month of absence
+* Day of the week
+* Season
+* Education
+
+But Education value somehow is showing the score of that person in education and so we don't consider it as categorical feature in our models.
+
+For other categorical features we use `factor()` function to build new features from them in order to fit a better model, and finally removing original features
+
+## Preprocess
+
+Each statistical method (Regression, Classification, Clustering, ...) has some tecniques which makes us to have some preprocess on data in order to change raw data to a suitable data for fitting a model. We perform a suitable preprocess at the beggining of each method
+
+It is always better to have less redundant features and avoiding to have a model with many estimators. There is two features in our dataset which can be exactly evaluated by other features:
+* _Season_ - can be evaluated by _Month_
+* _Body mass index_ - can be evaluated by _Weigth_ and _Height_
+
+We remove these features to make our models more responsive
 
 Regression
 ========================================================
 id:reg
 source: ../Src/Regression.R
+
+## Single Linear Regression
+
+### Categorical Data
+* Wrong Way:
+```{r}
+regFitWrong = lm(`Absenteeism time in hours` ~ `Reason for absence`, data = data)
+summary(regFitWrong)
+```
+
+* Right Way
+```{r}
+regFit = lm(`Absenteeism time in hours` ~ `Reason.f.`, data = data)
+summary(regFit)
+```
+
+```{r echo=FALSE,fig.align='center', figs.only=TRUE,out.extra='angle=90',out.width="100%"}
+plot(`Absenteeism time in hours` ~ `Reason for absence`, data = data)
+abline(regFitWrong, col = "red")
+abline(regFit, col = "blue")
+legend(20, 100, col = c("red", "blue"), legend = c("Wrong", "Right"), lty = 1, cex = 0.8)
+```
+
+Note that the blue line is specifying only one of newly added predictors
+
+Single Regression
+========================================================
+source: ../Src/Regression.R
+
+## Single Linear Regression
+
+```{r echo=FALSE,fig.align='center', figs.only=TRUE,out.extra='angle=90',out.width="100%"}
+singleReg = function(x, y, data, ...) {
+  fit = lm(y ~ x, data = data)
+  summary(fit)
+  plot(x, y, ..., main = "Regression on Absenteeism time in hours")
+  #points(data$`Absenteeism time in hours`,fitted(fit),col="red",pch=20,cex=0.9)
+  abline(fit, col = "green")
+}
+
+for (i in 1:NCOL(data)) {
+  singleReg(data[[i]], data$`Absenteeism time in hours`, data = data, xlab=names(data)[i])
+}
+```
+
+
+Multiple Regression
+========================================================
+source: ../Src/Regression.R
+
+```{r echo=FALSE, results='hide'}
+removeCols = c("ID", "Reason for absence", "Month of absence", "Day of the week", "Seasons", "Season.f", "Body mass index")
+data = data[ , !(names(data) %in% removeCols)]
+```
+
+### Regression Using Full Feature space
+```{r echo=T,fig.align='center', figs.only=TRUE,out.extra='angle=90',out.width="100%"}
+fitFull = lm(`Absenteeism time in hours` ~ . , data = data)
+summary(fitFull)
+```
+
+### Removing least significant feature
+```{r}
+fit1 = update(fitFull, . ~ . - ID.f , data = data)
+summary(fit1)
+```
+
+### Removing again...
+```{r}
+fit2 = update(fit1, . ~ . - Reason.f. , data = data)
+summary(fit2)
+```
+
+### And again...
+```{r}
+fit3 = update(fit2, . ~ . - Month.f , data = data)
+summary(fit3)
+```
+
+The problem is that this method does not make our remaining predictors more significant. So we shall use _**Subset Selection**_
+
+Multiple Regression - Subset Selection
+========================================================
+source: ../Src/Regression.R
+
+* We use validation set approach to test our models
+* Subset selecting by
+  + AIC & BIC parameters
+  + Forward, Backward, and Bi-Directional
+
+so, we have 6 combination:
+
+```{r echo=FALSE,results='hide'}
+slideEcho = FALSE
+### ========== Subset Selection (with Validation Set) ==========
+require(caTools)
+# Validation Split
+set.seed(652)
+splitTrain = sample.split(data$`Absenteeism time in hours`, SplitRatio = 0.5)
+
+trainData = subset(data, splitTrain)
+testData = subset(data, !splitTrain)
+
+# Subset Selection
+regNull = lm(data$`Absenteeism time in hours` ~ 1, data = data)
+regFull = lm(data$`Absenteeism time in hours` ~ ., data = data)
+
+summary(regNull)
+
+adjRSq = list()
+i = 1
+### ===== Best model by AIC =====
+
+# Forward
+forwardStepAIC = 
+  step(regNull,
+    scope = list(upper=regFull),
+    direction="forward",
+    trace = TRUE,
+    k = 2,        # AIC parameter
+    test="Chisq", # Chi Square test
+    data=trainData)
+
+summ = summary(forwardStepAIC)
+#if (slideEcho) summ
+forwardRegAIC = lm(forwardStepAIC[["terms"]], data = data)
+adjRSq[[i]] = summ$adj.r.squared
+i = i + 1
+
+# Backward
+backwardStepAIC = 
+  step(regFull,
+       scope = list(lower=regNull),
+       direction="backward",
+       trace = TRUE,
+       k = 2,        # AIC parameter
+       test="Chisq", # Chi Square test
+       data=trainData)
+
+summ = summary(backwardStepAIC)
+#if (slideEcho) summ
+backwardRegAIC = lm(backwardStepAIC[["terms"]], data = data)
+adjRSq[[i]] = summ$adj.r.squared
+i = i + 1
+
+# Both
+bidirStepAIC = 
+  step(regNull,
+       scope = list(upper=regFull),
+       direction="both",
+       trace = TRUE,
+       k = 2,        # AIC parameter
+       test="Chisq", # Chi Square test
+       data=trainData)
+
+summ = summary(bidirStepAIC)
+#if (slideEcho) summ
+bidirRegAIC = lm(bidirStepAIC[["terms"]], data = data)
+adjRSq[[i]] = summ$adj.r.squared
+i = i + 1
+
+### ===== Best model by BIC =====
+
+BIC_Param = log2(NROW(data))
+
+# Forward
+forwardStepBIC = 
+  step(regNull,
+       scope = list(upper=regFull),
+       direction="forward",
+       trace = TRUE,
+       k = BIC_Param,
+       test="Chisq", # Chi Square test
+       data=trainData)
+
+summ = summary(forwardStepBIC)
+#if (slideEcho) summ
+forwardRegBIC = lm(forwardStepAIC[["terms"]], data = data)
+adjRSq[[i]] = summ$adj.r.squared
+i = i + 1
+
+# Backward
+backwardStepBIC = 
+  step(regFull,
+       scope = list(lower=regNull),
+       direction="backward",
+       trace = TRUE,
+       k = BIC_Param,
+       test="Chisq", # Chi Square test
+       data=trainData)
+
+summ = summary(backwardStepBIC)
+#if (slideEcho) summ
+backwardRegBIC = lm(backwardStepBIC[["terms"]], data = data)
+adjRSq[[i]] = summ$adj.r.squared
+i = i + 1
+
+# Both
+bidirStepBIC = 
+  step(regNull,
+       scope = list(upper=regFull),
+       direction="both",
+       trace = TRUE,
+       k = BIC_Param,
+       test="Chisq", # Chi Square test
+       data=trainData)
+
+summ = summary(bidirStepBIC)
+#if (slideEcho) summ
+bidirRegBIC = lm(bidirStepBIC[["terms"]], data = data)
+adjRSq[[i]] = summ$adj.r.squared
+i = i + 1
+```
+
+### Results:
+```{r echo=FALSE,fig.align='center', figs.only=TRUE,out.extra='angle=90',out.width="100%"}
+### ===== Result: =====
+models = list(forwardRegAIC, backwardRegAIC, bidirRegAIC, forwardRegBIC, backwardRegBIC, bidirRegBIC)
+modelNames = c("Frw. AIC", "Bckw. AIC", "Bidir AIC", "Frw. BIC", "Bckw. BIC", "Bidir BIC")
+testMse = list()
+for (i in 1:length(models)) {
+  resp = predict(models[[i]], newdata = testData, type = "response")
+  testMse[i] = mean((testData$`Absenteeism time in hours` - resp)^2)
+}
+
+barplot(unlist(testMse), names = modelNames, ylab = "Test MSE", xlab = "Best Fitted Model")
+
+# Adj R Squared
+for (i in 1:length(adjRSq)) {
+  if (is.null(adjRSq[[i]])) {
+    adjRSq[[i]] = -0.0001;
+  }
+}
+barplot(unlist(adjRSq), names = modelNames, ylab = "Adjusted R Squared", xlab = "Best Fitted Model")
+```
+
+* So, Best linear regression model is:
+```{r}
+summary(bidirRegAIC)
+```
+
+Ridge & Lasso Regression
+========================================================
+source: ../Src/Regression.R
+
+* Applying Ridge & Lasso Regression by different values for lambda
+* Finding best lambda with Cross Validation
+
+```{r fig.align='center', figs.only=TRUE,out.extra='angle=90',out.width="100%"}
+require(glmnet)
+
+X = data.matrix(data[, setdiff(colnames(data), "Absenteeism time in hours")])
+# Ridge
+ridgeReg = glmnet(X, data$`Absenteeism time in hours`, alpha = 0)
+plot(ridgeReg, main = "Ridge Regression against lambda Value")
+ridgeReg = cv.glmnet(X, data$`Absenteeism time in hours`, alpha = 0)
+plot(ridgeReg, main = "Cross Validated MSE over Ridge lambda Value")
+coef.cv.glmnet(ridgeReg, s = "lambda.min")
+
+# Lasso
+lassoReg = glmnet(X, data$`Absenteeism time in hours`, alpha = 1)
+plot(lassoReg, main = "Lasso Regression against lambda Value")
+lassoReg = cv.glmnet(X, data$`Absenteeism time in hours`, alpha = 1)
+plot(lassoReg, main = "Cross Validated MSE over Lasso lambda Value")
+coef.cv.glmnet(lassoReg, s = "lambda.min")
+
+summary(lassoReg)
+```
+
+
+Classification
+========================================================
+
+This dataset also provides 'Reason For Absence' which we use as target of classification
+
+
+Logestic Regression
+========================================================
+source: ../Src/Classification.R
+
+In logestic regression we fit probabilities over target classes (0, 1) in binary classification. In order to discuss _True positive_, _False Positive_, _True Negative_, _False Negative_ we need to use a binary classification. But our target has more classes:
+```{r}
+length(levels(data$Reason.f.))
+```
+
+So, we define new classification target _"Reason ICD Disease"_ which determines whether _Reason for absence_ is one of the disease coded by International Code of Disease (ICD) or not.
+
+We also use 10-fold Cross Validation to find best coefficent for logestic regression.
+
+When we find our best model the result of model for test data is fitted probability values between 0 and 1.
+
+So, the default action is to assign values with probability less than 0.5 to class 0 and higher than 0.5 to class 1 respectively.
+
+But as you can see in data, The samples with _'Other'_ label has lower frequency. so the threshold 0.5 for assigning classes may not be useful. ROC curves help us to find optimum threshold.
+
+So, enough talking. Move on to codes...
+
+```{r fig.align='center', figs.only=TRUE,out.extra='angle=90',out.width="100%"}
+setwd("..")
+source("./Src/Classification.R", local = FALSE)
+```
+
+
+KNN
+========================================================
+source: ../Src/KNN.R
+
+In kNN for a new test data we consider its k nearest neighbor as the voters for this new data class. 
+
+It is completely straight Assigning k = 15:
+```{r echo = FALSE}
+setwd("..")
+getwd()
+source("./Src/KNN.R", echo = FALSE)
+```
+
+
+Discriminant Analysis
+========================================================
+source: ../Src/DiscriminantAnalysis.R
+
+Here we use original _"Reason for absence"_ feature for classification and because of this the problem is not binary classification anymore
+
+## Preprocess
+
+In discriminant analysis we assume that each class have normal distribution and then fit the model according to a score. According to what we said before, each method needs a special preprocess on data in order to work well. For discriminant analysis we need to have more than 30 instances in each class to fit a normal distrbution. So in our preprocess here we remove instances labeled by classes with less than 30 frequeny rate.
+
+We also mentioned that in this dataset many features are dependent on eachother, because the value of these columns for a single person remains constant. This makes columns of data frame linearly dependent and model can not be fit. In order to resolve this issue we have 2 options:
+* Remove these columns until we have linearly independent columns
+* Project each data to a new feature space with linearly independent columns
+
+The first option seems good and easy but it removes many important parts of data which may be relevant to the _'Reason for absence'_.
+
+The second option also seems good in Theory, but in practice which projection is best? The best possible solution seems to be the PCA feature space. We project original feature to PCA components with higher importance and leave out the less important features until we have new columns with linear independence.
+
+## The Code
+
+
+
+SVM
+========================================================
+source: ../Src/SVM.R
+
+We use multi class SVM which fits an SVM model for binary classification for each class (One vs. All). 
+
+We first train a SVM model by 10-fold Cross Validation on full data set.
+
+Then we dig into SVM details by splitting data into _Train_ and _Test_ sets (4:1 ratio) and applying a grid search for best cost parameter in SVM model by _linear_ and _radial_ kernels to find the best model and test it over _Test_ data. Here is the code:
+
+
+Tree
+========================================================
+source: ../Src/Tree.R
+
+
+
 
 
 
@@ -118,24 +542,6 @@ The Google Play Games plugin for Unity allows you to access the Google Play Game
 API through Unity's [social interface](http://docs.unity3d.com/Documentation/ScriptReference/Social.html).
 The plugin provides support for the
 following features of the Google Play Games API:<br/>
-
-* sign in
-* unlock/reveal/increment achievement
-* post score to leaderboard
-* cloud save read/write
-* show built-in achievement/leaderboards UI
-* events and quests
-* [nearby connections](NEARBY.md)
-* [turn-based multiplayer](TBMP.md)
-* [real-time multiplayer](RTMP.md)
-
-
-__NOTICE__: Google Play games services for iOS is deprecated,
-and is not likely to function as expected. Do not use Google Play games
-services for iOS in new apps. See the [deprecation announcement](https://android-developers.googleblog.com/2017/04/focusing-our-google-play-games-services.html)
-blog post for more details.
-
-Features:
 
 
 First Slide
