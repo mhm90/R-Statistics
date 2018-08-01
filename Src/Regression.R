@@ -235,6 +235,8 @@ barplot(unlist(adjRSq), names = modelNames, ylab = "Adjusted R Squared", xlab = 
 
 require(glmnet)
 
+# http://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html#intro
+
 X = data.matrix(data[, setdiff(colnames(data), "Absenteeism time in hours")])
 # Ridge
 ridgeReg = glmnet(X, data$`Absenteeism time in hours`, alpha = 0)
